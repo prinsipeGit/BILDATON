@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071b2d" />
+    <title>Luca — Student Support</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#top" aria-label="Luca home">
+          <span class="brand-mark">L</span>
+          <span>Luca<span class="brand-dot">.</span></span>
+        </a>
+
+        <p class="eyebrow nav-title">Support workspace</p>
+        <nav aria-label="Main navigation">
+          <a class="nav-item active" href="#top"><span>◈</span> Inbox <b>12</b></a>
+          <a class="nav-item" href="#cases"><span>▣</span> Cases</a>
+          <a class="nav-item" href="#knowledge"><span>◫</span> Knowledge</a>
+          <a class="nav-item" href="#insights"><span>⌁</span> Insights</a>
+        </nav>
+
+        <section class="sidebar-note">
+          <span class="status-dot"></span>
+          <div>
+            <strong>Guardrails active</strong>
+            <p>Human review for sensitive requests</p>
+          </div>
+        </section>
+
+        <div class="staff-card">
+          <div class="avatar avatar-staff">MR</div>
+          <div><strong>Mariel Reyes</strong><span>IT Support</span></div>
+          <button class="more" aria-label="Account options">•••</button>
+        </div>
+      </aside>
+
+      <main id="top" class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">IT SUPPORT · LIVE PROTOTYPE</p>
+            <h1>Good morning, Mariel.</h1>
+          </div>
+          <div class="top-actions">
+            <button class="icon-button" aria-label="Notifications">♢<span class="notification"></span></button>
+            <button class="new-case" id="newCaseButton">+ New case</button>
+          </div>
+        </header>
+
+        <section class="metric-grid" aria-label="Support metrics">
+          <article class="metric-card"><span>Open cases</span><strong>12</strong><em class="up">↗ 18%</em></article>
+          <article class="metric-card"><span>AI resolved</span><strong>64%</strong><em class="up">↗ 6%</em></article>
+          <article class="metric-card"><span>First reply</span><strong>4m 12s</strong><em class="neutral">Target &lt; 10m</em></article>
+          <article class="metric-card amber"><span>Needs review</span><strong>3</strong><em>Action needed</em></article>
+        </section>
+
+        <section class="workspace-grid">
+          <article class="panel queue-panel" id="cases">
+            <div class="panel-heading">
+              <div><p class="eyebrow">INCOMING</p><h2>Case queue</h2></div>
+              <button class="text-button">View all →</button>
+            </div>
+            <div class="filter-row"><button class="filter active">All <b>12</b></button><button class="filter">Assigned</button><button class="filter">Needs review <b>3</b></button></div>
+            <div class="case-list">
+              <button class="case active-case" data-case="password"><span class="avatar violet">AJ</span><span class="case-copy"><strong>Alex J.</strong><small>I can’t reset my university password…</small></span><time>Now</time></button>
+              <button class="case" data-case="wifi"><span class="avatar blue">KM</span><span class="case-copy"><strong>Kian M.</strong><small>Wi‑Fi disconnects in the library.</small></span><time>6m</time></button>
+              <button class="case" data-case="grade"><span class="avatar orange">SR</span><span class="case-copy"><strong>Sofia R.</strong><small>Can you change my final grade?</small></span><time>11m</time></button>
+              <button class="case" data-case="printing"><span class="avatar green">DN</span><span class="case-copy"><strong>Diego N.</strong><small>My print job is stuck in the queue.</small></span><time>18m</time></button>
+            </div>
+          </article>
+
+          <article class="panel chat-panel">
+            <div class="chat-heading">
+              <div class="student-title"><span class="avatar violet">AJ</span><div><h2>Alex Johnson</h2><p><span class="online-dot"></span> Messenger · Student identity unverified</p></div></div>
+              <button class="icon-button" aria-label="More conversation options">•••</button>
+            </div>
+            <div class="safety-banner"><span>✦</span><p><strong>Luca can help with general guidance.</strong> Identity-sensitive actions require a secure verification link or staff review.</p></div>
+            <div class="messages" id="messages" aria-live="polite">
+              <div class="message-row student"><div class="avatar violet">AJ</div><div><div class="bubble">Hi! I’m locked out of my university account. I need to submit an assignment today.</div><time>10:42 AM</time></div></div>
+              <div class="message-row agent"><div class="avatar luca-avatar">L</div><div><p class="sender">Luca <span>AI support assistant</span></p><div class="bubble">I can help you get back in. Are you seeing a password-reset error, or do you no longer have access to your recovery email?</div><time>10:42 AM</time></div></div>
+              <div class="message-row student"><div class="avatar violet">AJ</div><div><div class="bubble">I can get the reset email, but the link says it expired.</div><time>10:43 AM</time></div></div>
+              <div class="message-row agent" id="agentResponse"><div class="avatar luca-avatar">L</div><div><p class="sender">Luca <span>AI support assistant</span></p><div class="bubble">A reset link expires after 15 minutes. Please request a new one from the sign-in page, then open only the most recent email. If it still expires, I’ll create an IT Support ticket for you.</div><div class="citation">◫ Based on <a href="#knowledge">Password reset guide · v3.2</a></div><time>10:43 AM</time></div></div>
+            </div>
+            <form class="composer" id="chatForm">
+              <label class="sr-only" for="chatInput">Message Luca</label>
+              <input id="chatInput" autocomplete="off" placeholder="Write a message to Luca…" />
+              <button type="button" class="attach" aria-label="Attach file">+</button>
+              <button type="submit" class="send" aria-label="Send message">↑</button>
+            </form>
+            <p class="composer-note">Luca will never ask for your password, one-time code, or student record details here.</p>
+          </article>
+
+          <aside class="right-rail">
+            <section class="panel agent-panel">
+              <div class="panel-heading"><div><p class="eyebrow">AGENT ACTIVITY</p><h2>Luca’s work</h2></div><span class="live-pill"><i></i> Live</span></div>
+              <ol class="agent-steps" id="agentSteps">
+                <li class="done"><span>✓</span><div><strong>Classified request</strong><p>Account access · IT Support</p></div><time>10:43</time></li>
+                <li class="done"><span>✓</span><div><strong>Checked safety policy</strong><p>No sensitive data requested</p></div><time>10:43</time></li>
+                <li class="done"><span>✓</span><div><strong>Searched approved knowledge</strong><p>1 current guide matched</p></div><time>10:43</time></li>
+                <li class="waiting"><span>◌</span><div><strong>Waiting for Alex</strong><p>Escalate if reset still fails</p></div></li>
+              </ol>
+              <button class="escalate" id="escalateButton">Escalate to IT Support <span>→</span></button>
+            </section>
+
+            <section class="panel context-panel" id="knowledge">
+              <div class="panel-heading"><div><p class="eyebrow">CASE CONTEXT</p><h2>What Luca knows</h2></div></div>
+              <dl>
+                <div><dt>Category</dt><dd><span class="tag">Account access</span></dd></div>
+                <div><dt>Risk level</dt><dd><span class="tag green-tag">Low</span></dd></div>
+                <div><dt>Identity</dt><dd>Unverified</dd></div>
+                <div><dt>Suggested priority</dt><dd>Normal</dd></div>
+              </dl>
+              <div class="knowledge-card"><span class="knowledge-icon">◫</span><div><p>Approved knowledge</p><strong>Password reset guide</strong><small>Published · Effective now</small></div><button aria-label="Open knowledge article">↗</button></div>
+            </section>
+          </aside>
+        </section>
+
+        <section class="pilot-note" id="insights"><span>✦</span><p><strong>Prototype mode:</strong> the agent conversation is simulated. In production, every decision is validated by policy, audited, and routed through the ticket workflow.</p></section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
