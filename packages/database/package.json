@@ -5,11 +5,11 @@
   "type": "module",
   "exports": "./src/index.ts",
   "scripts": {
-    "generate": "node --env-file=../../.env ../../node_modules/prisma/build/index.js generate",
-    "migrate:dev": "node --env-file=../../.env ../../node_modules/prisma/build/index.js migrate dev",
-    "migrate:deploy": "node --env-file=../../.env ../../node_modules/prisma/build/index.js migrate deploy",
-    "validate": "node --env-file=../../.env ../../node_modules/prisma/build/index.js validate",
-    "seed": "node --env-file=../../.env prisma/seed.mjs",
+    "generate": "node --env-file-if-exists=../../.env ../../node_modules/prisma/build/index.js generate",
+    "migrate:dev": "node --env-file-if-exists=../../.env ../../node_modules/prisma/build/index.js migrate dev",
+    "migrate:deploy": "node --env-file-if-exists=../../.env ../../node_modules/prisma/build/index.js migrate deploy",
+    "validate": "node --env-file-if-exists=../../.env ../../node_modules/prisma/build/index.js validate",
+    "seed": "node --env-file-if-exists=../../.env prisma/seed.mjs",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests"

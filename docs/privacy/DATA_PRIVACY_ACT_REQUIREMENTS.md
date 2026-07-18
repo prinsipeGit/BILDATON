@@ -71,16 +71,14 @@ The retrieval service must enforce every item below for every query:
 
 ## Current repository gaps
 
-The current schema models `KnowledgeDocument` and `KnowledgeVersion`, but it does not yet model chunks, embeddings, citations, publication actors/timestamps, audience scope, source provenance, retention, or erasure state. The AI package is reserved and no retrieval code exists.
+The forward-only expansion migration defines `KnowledgeChunk`, vector embeddings, `KnowledgeCitation`, and institution/department scope. It must be applied to each target Supabase project before those tables can be used. The repository includes an OpenAI provider adapter, but it is not wired into a runtime route or worker and there is still no ingestion pipeline, retriever, source-review workflow, or retrieval enforcement test suite.
 
-Before implementing RAG, add a design and migration that defines at minimum:
+The model records approval and effective dates, but it does not yet provide a dedicated publication/revocation actor-and-timestamp record, retention or erasure state, or deletion jobs. Before enabling RAG, implement:
 
-- a versioned `KnowledgeChunk` with institution, department, audience, source, and embedding ownership;
-- an explicit citation relation from an AI answer/run to the exact document version and chunk;
-- publication and revocation audit metadata;
-- retrieval filters that are mandatory in the service API;
-- deletion propagation to the vector index and caches;
-- tests proving that unauthorized, unpublished, expired, and deleted content cannot be retrieved.
+- a service API that requires institution, department, audience, publication, and effective-date filters before ranking chunks;
+- source ownership, provenance, publication, revocation, and citation audit metadata;
+- deletion propagation to the vector index, caches, traces, and provider-facing records;
+- tests proving that unauthorized, unpublished, expired, revoked, and deleted content cannot be retrieved.
 
 ## Pilot gates
 

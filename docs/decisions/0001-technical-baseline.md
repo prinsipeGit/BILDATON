@@ -13,7 +13,7 @@ Use an npm-workspace TypeScript modular monolith:
 
 - Fastify for the API and Meta webhook
 - a separate worker process sharing domain packages
-- Prisma with PostgreSQL and pgvector-ready local infrastructure
+- Prisma with PostgreSQL and a pgvector-ready migration; retrieval remains a later service capability
 - Redis/BullMQ for asynchronous processing
 - OpenAPI for HTTP contracts
 - Vitest and Playwright for automated tests

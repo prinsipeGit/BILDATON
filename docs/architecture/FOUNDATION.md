@@ -13,7 +13,7 @@ The first deliverable proves one auditable workflow:
 7. The worker delivers the reply through Messenger and records the outcome.
 8. Every state change produces an audit event.
 
-AI classification is added only after this non-AI path is reliable.
+AI classification is added only after this non-AI path is reliable. The repository currently provides configuration, health/readiness, and Prisma foundations; the signed Messenger-to-ticket path remains the next implementation milestone.
 
 ## Trust boundaries
 
@@ -39,10 +39,10 @@ AI classification is added only after this non-AI path is reliable.
 
 Modules share one deployment and database initially, but may not bypass another module's public service interface.
 
-## Required implementation order
+## Registration implementation sequence
 
-1. Configuration validation and health endpoint.
-2. Database migrations and seed one institution plus Registration.
+1. Validate configuration and health/readiness endpoints.
+2. Apply database migrations and seed the institution plus department configuration. Registration remains the only pilot service.
 3. Webhook verification and idempotent event storage.
 4. Conversation/message persistence and Registration ticket creation.
 5. Staff authentication and department authorization.
