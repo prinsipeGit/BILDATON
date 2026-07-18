@@ -4,8 +4,8 @@ const prisma = new PrismaClient();
 
 const institutionName = process.env.SEED_INSTITUTION_NAME ?? "Areneo University";
 const institutionSlug = process.env.SEED_INSTITUTION_SLUG ?? "areneo-university";
-const externalAuthId = process.env.SEED_STAFF_EXTERNAL_AUTH_ID ?? "seed-it-admin";
-const staffEmail = process.env.SEED_STAFF_EMAIL ?? "it-admin@example.test";
+const externalAuthId = process.env.SEED_STAFF_EXTERNAL_AUTH_ID ?? "seed-registration-admin";
+const staffEmail = process.env.SEED_STAFF_EMAIL ?? "registration-admin@example.test";
 
 try {
   const institution = await prisma.institution.upsert({
@@ -18,14 +18,14 @@ try {
     where: {
       institutionId_slug: {
         institutionId: institution.id,
-        slug: "it-support",
+        slug: "registration",
       },
     },
-    update: { name: "IT Support", enabled: true },
+    update: { name: "Registration", enabled: true },
     create: {
       institutionId: institution.id,
-      name: "IT Support",
-      slug: "it-support",
+      name: "Registration",
+      slug: "registration",
     },
   });
 
