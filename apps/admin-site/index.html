@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#173529" />
+    <meta
+      name="description"
+      content="Luca Registration Support workspace for the Areneo University pilot."
+    />
+    <title>Luca | Registration Support</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Luca navigation">
+        <a class="brand" href="#top" aria-label="Luca Registration Support home">
+          <span class="brand-mark" aria-hidden="true">L</span>
+          <span>Luca<span class="brand-dot">.</span></span>
+        </a>
+
+        <p class="eyebrow nav-title">Registration pilot</p>
+        <nav aria-label="Workspace navigation">
+          <a class="nav-item active" href="#top"><i data-lucide="inbox" aria-hidden="true"></i><span>Inbox</span><b id="navCaseCount">4</b></a>
+          <a class="nav-item" href="#cases"><i data-lucide="folder-kanban" aria-hidden="true"></i><span>Requests</span></a>
+          <a class="nav-item" href="#knowledge"><i data-lucide="book-open-check" aria-hidden="true"></i><span>Knowledge</span></a>
+          <a class="nav-item" href="#insights"><i data-lucide="chart-no-axes-combined" aria-hidden="true"></i><span>Insights</span></a>
+        </nav>
+
+        <section class="sidebar-note" aria-label="Safety guardrail status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <div>
+            <strong>Guardrails active</strong>
+            <p>Staff review for sensitive requests</p>
+          </div>
+        </section>
+
+        <div class="staff-card">
+          <div class="avatar avatar-staff" aria-hidden="true">MR</div>
+          <div><strong>Mariel Reyes</strong><span>Registration</span></div>
+          <button class="icon-button compact" type="button" title="Account options" aria-label="Account options">
+            <i data-lucide="ellipsis" aria-hidden="true"></i>
+          </button>
+        </div>
+      </aside>
+
+      <main id="top" class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">REGISTRATION SUPPORT</p>
+            <h1>Good morning, Mariel.</h1>
+          </div>
+          <div class="top-actions">
+            <div class="api-status" id="apiStatus" data-state="idle" role="status" aria-live="polite">
+              <span class="status-indicator" aria-hidden="true"></span>
+              <span id="apiStatusText">API not configured</span>
+              <button class="icon-button compact" id="apiSettingsButton" type="button" title="Configure API connection" aria-label="Configure API connection">
+                <i data-lucide="settings-2" aria-hidden="true"></i>
+              </button>
+            </div>
+            <button class="icon-button" type="button" title="Notifications" aria-label="Notifications">
+              <i data-lucide="bell" aria-hidden="true"></i><span class="notification" aria-hidden="true"></span>
+            </button>
+            <button class="command-button" id="newCaseButton" type="button"><i data-lucide="plus" aria-hidden="true"></i><span>New request</span></button>
+          </div>
+        </header>
+
+        <section class="metric-grid" aria-label="Registration support metrics">
+          <article class="metric-card"><span>Open requests</span><strong id="openCaseCount">4</strong><em class="up">Pilot queue</em></article>
+          <article class="metric-card"><span>First reply</span><strong>4m 12s</strong><em class="neutral">Target under 10m</em></article>
+          <article class="metric-card"><span>Verified identity</span><strong>0</strong><em class="neutral">Not required for FAQs</em></article>
+          <article class="metric-card amber"><span>Needs review</span><strong id="reviewCaseCount">1</strong><em>Staff action</em></article>
+        </section>
+
+        <section class="workspace-grid">
+          <article class="panel queue-panel" id="cases">
+            <div class="panel-heading">
+              <div><p class="eyebrow">INCOMING</p><h2>Request queue</h2></div>
+              <button class="icon-button compact" id="refreshApiButton" type="button" title="Refresh API status" aria-label="Refresh API status">
+                <i data-lucide="refresh-cw" aria-hidden="true"></i>
+              </button>
+            </div>
+            <div class="filter-row" role="group" aria-label="Request queue filters">
+              <button class="filter active" type="button" data-filter="all">All <b id="allFilterCount">4</b></button>
+              <button class="filter" type="button" data-filter="assigned">Assigned</button>
+              <button class="filter" type="button" data-filter="review">Needs review <b id="reviewFilterCount">1</b></button>
+            </div>
+            <div class="case-list" id="caseList" aria-label="Registration requests"></div>
+            <p class="queue-footnote"><i data-lucide="monitor-dot" aria-hidden="true"></i><span>Prototype queue. No student records are displayed.</span></p>
+          </article>
+
+          <article class="panel chat-panel" aria-label="Request conversation">
+            <div class="chat-heading" id="chatHeading"></div>
+            <div class="safety-banner"><i data-lucide="shield-check" aria-hidden="true"></i><p><strong>Luca can share approved general guidance.</strong> Account-specific actions require verification or staff review.</p></div>
+            <div class="messages" id="messages" aria-live="polite"></div>
+            <form class="composer" id="chatForm">
+              <label class="sr-only" for="chatInput">Message Luca</label>
+              <input id="chatInput" autocomplete="off" maxlength="600" placeholder="Write a message to Luca" />
+              <button class="icon-button compact" type="button" title="Attachments are not enabled" aria-label="Attachments are not enabled" disabled>
+                <i data-lucide="paperclip" aria-hidden="true"></i>
+              </button>
+              <button class="icon-button send" type="submit" title="Save demo message" aria-label="Save demo message"><i data-lucide="arrow-up" aria-hidden="true"></i></button>
+            </form>
+            <p class="composer-note">Luca never asks for passwords, one-time codes, or student-record details here.</p>
+          </article>
+
+          <aside class="right-rail">
+            <section class="panel agent-panel">
+              <div class="panel-heading"><div><p class="eyebrow">REQUEST ACTIVITY</p><h2>Luca's review</h2></div><span class="live-pill"><i></i> Demo</span></div>
+              <ol class="agent-steps" id="agentSteps"></ol>
+              <button class="command-button outline" id="escalateButton" type="button"><i data-lucide="arrow-up-right" aria-hidden="true"></i><span>Escalate to Registration</span></button>
+            </section>
+
+            <section class="panel context-panel" id="knowledge">
+              <div class="panel-heading"><div><p class="eyebrow">REQUEST CONTEXT</p><h2>Current routing</h2></div></div>
+              <dl id="caseContext"></dl>
+              <div class="knowledge-row">
+                <span class="knowledge-icon"><i data-lucide="book-open-check" aria-hidden="true"></i></span>
+                <div><p>Approved knowledge</p><strong id="knowledgeTitle">Registration guide</strong><small id="knowledgeStatus">Demo source only</small></div>
+                <button class="icon-button compact" type="button" title="Knowledge search is not deployed" aria-label="Knowledge search is not deployed" disabled>
+                  <i data-lucide="external-link" aria-hidden="true"></i>
+                </button>
+              </div>
+            </section>
+
+            <section class="connection-card" aria-label="API connection details">
+              <span class="connection-icon"><i data-lucide="plug-zap" aria-hidden="true"></i></span>
+              <div><p>API connection</p><strong id="connectionSummary">Configure a public API URL</strong><small id="connectionDetail">Health and readiness checks appear here.</small></div>
+            </section>
+          </aside>
+        </section>
+
+        <section class="pilot-note" id="insights"><i data-lucide="flask-conical" aria-hidden="true"></i><p><strong>Prototype mode:</strong> queue and conversation content stay in this browser. The live API connection checks service health only until the Registration ticket endpoints are deployed.</p></section>
+      </main>
+    </div>
+
+    <dialog class="modal" id="apiDialog" aria-labelledby="apiDialogTitle">
+      <form class="modal-content" id="apiSettingsForm" method="dialog">
+        <div class="modal-heading">
+          <div><p class="eyebrow">CONNECTION</p><h2 id="apiDialogTitle">API endpoint</h2></div>
+          <button class="icon-button compact" type="button" id="closeApiDialog" title="Close API settings" aria-label="Close API settings"><i data-lucide="x" aria-hidden="true"></i></button>
+        </div>
+        <label for="apiBaseUrl">Public API base URL</label>
+        <input id="apiBaseUrl" name="apiBaseUrl" inputmode="url" autocomplete="url" placeholder="https://api.example.edu" />
+        <p class="field-note">Only a public HTTPS API URL belongs here. Never put API keys or database credentials in this page.</p>
+        <p class="form-error" id="apiError" role="alert"></p>
+        <div class="modal-actions"><button class="text-button" id="clearApiButton" type="button">Clear</button><button class="command-button" type="submit"><i data-lucide="plug" aria-hidden="true"></i><span>Save and test</span></button></div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="newCaseDialog" aria-labelledby="newCaseDialogTitle">
+      <form class="modal-content" id="newCaseForm">
+        <div class="modal-heading">
+          <div><p class="eyebrow">PROTOTYPE</p><h2 id="newCaseDialogTitle">New Registration request</h2></div>
+          <button class="icon-button compact" id="closeNewCaseDialog" type="button" title="Close new request" aria-label="Close new request"><i data-lucide="x" aria-hidden="true"></i></button>
+        </div>
+        <label for="requestName">Student display name</label>
+        <input id="requestName" maxlength="60" autocomplete="off" placeholder="Student name" required />
+        <label for="requestText">Request</label>
+        <textarea id="requestText" maxlength="600" placeholder="Describe the Registration question" required></textarea>
+        <p class="field-note">This creates a local prototype item only. It does not submit data to a university system.</p>
+        <div class="modal-actions"><button class="text-button" id="cancelNewCaseButton" type="button">Cancel</button><button class="command-button" type="submit"><i data-lucide="plus" aria-hidden="true"></i><span>Create local draft</span></button></div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="./runtime-config.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

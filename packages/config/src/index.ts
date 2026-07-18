@@ -3,6 +3,7 @@ export interface AppConfig {
   port: number;
   databaseUrl: string;
   redisUrl: string;
+  corsAllowedOrigins: readonly string[];
 }
 
 export function loadConfig(environment: NodeJS.ProcessEnv): AppConfig {
@@ -18,8 +19,9 @@ export function loadConfig(environment: NodeJS.ProcessEnv): AppConfig {
 
   const databaseUrl = requireUrl(environment, "DATABASE_URL", ["postgres:", "postgresql:"]);
   const redisUrl = requireUrl(environment, "REDIS_URL", ["redis:", "rediss:"]);
+  const corsAllowedOrigins = parseCorsAllowedOrigins(environment.CORS_ALLOWED_ORIGINS);
 
-  return { nodeEnv, port, databaseUrl, redisUrl };
+  return { nodeEnv, port, databaseUrl, redisUrl, corsAllowedOrigins };
 }
 
 export interface MetaConfig {
@@ -78,4 +80,21 @@ function requireSecret(environment: NodeJS.ProcessEnv, name: string): string {
     throw new Error(`${name} is required and must not be a placeholder`);
   }
   return value;
+}
+
+function parseCorsAllowedOrigins(value: string | undefined): readonly string[] {
+  if (!value?.trim()) return [];
+
+  return value.split(",").map((item) => item.trim()).filter(Boolean).map((origin) => {
+    let url: URL;
+    try {
+      url = new URL(origin);
+    } catch {
+      throw new Error("CORS_ALLOWED_ORIGINS must contain valid origins");
+    }
+    if (!["http:", "https:"].includes(url.protocol) || url.origin !== origin) {
+      throw new Error("CORS_ALLOWED_ORIGINS must contain HTTP or HTTPS origins without paths");
+    }
+    return origin;
+  });
 }

@@ -14,6 +14,44 @@ describe("health endpoint", () => {
 
     await app.close();
   });
+
+  it("allows a configured Pages origin to read service health", async () => {
+    const app = buildApp({ corsOrigins: ["https://prinsipegit.github.io"] });
+    const response = await app.inject({
+      method: "GET",
+      url: "/health",
+      headers: { origin: "https://prinsipegit.github.io" }
+    });
+
+    expect(response.headers["access-control-allow-origin"]).toBe("https://prinsipegit.github.io");
+    expect(response.headers.vary).toBe("Origin");
+    await app.close();
+  });
+
+  it("does not allow an unconfigured cross-origin request", async () => {
+    const app = buildApp({ corsOrigins: ["https://prinsipegit.github.io"] });
+    const response = await app.inject({
+      method: "GET",
+      url: "/health",
+      headers: { origin: "https://untrusted.example" }
+    });
+
+    expect(response.headers["access-control-allow-origin"]).toBeUndefined();
+    await app.close();
+  });
+
+  it("responds to a configured-origin CORS preflight", async () => {
+    const app = buildApp({ corsOrigins: ["https://prinsipegit.github.io"] });
+    const response = await app.inject({
+      method: "OPTIONS",
+      url: "/health",
+      headers: { origin: "https://prinsipegit.github.io" }
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.headers["access-control-allow-methods"]).toBe("GET, OPTIONS");
+    await app.close();
+  });
 });
 
 describe("readiness endpoint", () => {

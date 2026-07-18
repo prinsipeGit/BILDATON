@@ -1,0 +1,61 @@
+name: Deploy Registration Mockup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/admin-site/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Prepare static site
+        env:
+          LUCA_API_BASE_URL: ${{ vars.LUCA_API_BASE_URL }}
+        run: |
+          mkdir -p _site
+          cp -R apps/admin-site/. _site/
+          node --input-type=module <<'NODE'
+          import { writeFile } from "node:fs/promises";
+
+          const apiBaseUrl = process.env.LUCA_API_BASE_URL ?? "";
+          await writeFile(
+            "_site/runtime-config.js",
+            `window.LUCA_CONFIG = Object.freeze({ apiBaseUrl: ${JSON.stringify(apiBaseUrl)} });\n`,
+            "utf8"
+          );
+          NODE
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

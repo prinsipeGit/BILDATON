@@ -14,7 +14,8 @@ describe("loadConfig", () => {
       nodeEnv: "test",
       port: 3001,
       databaseUrl: validEnvironment.DATABASE_URL,
-      redisUrl: validEnvironment.REDIS_URL
+      redisUrl: validEnvironment.REDIS_URL,
+      corsAllowedOrigins: []
     });
   });
 
@@ -28,6 +29,20 @@ describe("loadConfig", () => {
     expect(() => loadConfig({ ...validEnvironment, REDIS_URL: "https://example.test" })).toThrow(
       "REDIS_URL must use redis: or rediss:"
     );
+  });
+
+  it("accepts an explicit list of public web origins", () => {
+    expect(loadConfig({
+      ...validEnvironment,
+      CORS_ALLOWED_ORIGINS: "https://prinsipegit.github.io,http://localhost:4173"
+    }).corsAllowedOrigins).toEqual(["https://prinsipegit.github.io", "http://localhost:4173"]);
+  });
+
+  it("rejects a CORS origin with a path", () => {
+    expect(() => loadConfig({
+      ...validEnvironment,
+      CORS_ALLOWED_ORIGINS: "https://prinsipegit.github.io/BILDATON"
+    })).toThrow("CORS_ALLOWED_ORIGINS must contain HTTP or HTTPS origins without paths");
   });
 });
 

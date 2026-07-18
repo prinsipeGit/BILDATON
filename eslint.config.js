@@ -17,6 +17,19 @@ export default tseslint.config(
     }
   },
   {
+    files: ["apps/admin-site/**/*.js"],
+    languageOptions: {
+      globals: {
+        AbortController: "readonly",
+        DOMException: "readonly",
+        URL: "readonly",
+        document: "readonly",
+        fetch: "readonly",
+        window: "readonly"
+      }
+    }
+  },
+  {
     files: ["**/*.ts"],
     rules: {
       "@typescript-eslint/consistent-type-imports": "error",

@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 const redis = createClient({ url: config.redisUrl });
 
 const app = buildApp({
+  corsOrigins: config.corsAllowedOrigins,
   readinessProbes: [
     { name: "database", check: async () => void (await prisma.$queryRaw`SELECT 1`) },
     {

@@ -8,6 +8,7 @@ export interface ReadinessProbe {
 
 export interface BuildAppOptions {
   readinessProbes?: readonly ReadinessProbe[];
+  corsOrigins?: readonly string[];
 }
 
 export function buildApp(options: BuildAppOptions = {}) {
@@ -23,6 +24,19 @@ export function buildApp(options: BuildAppOptions = {}) {
   });
 
   app.register(sensible);
+
+  const corsOrigins = new Set(options.corsOrigins ?? []);
+  app.addHook("onRequest", async (request, reply) => {
+    const origin = request.headers.origin;
+    if (!origin || !corsOrigins.has(origin)) return;
+
+    reply.header("access-control-allow-origin", origin);
+    reply.header("access-control-allow-methods", "GET, OPTIONS");
+    reply.header("access-control-allow-headers", "Content-Type");
+    reply.header("vary", "Origin");
+
+    if (request.method === "OPTIONS") return reply.code(204).send();
+  });
 
   app.get("/health", async () => ({
     service: "luca-api",
