@@ -17,7 +17,7 @@ The Luca plan is the implementation baseline. The original Campus Front Door PRD
 | Knowledge governance | Admin-managed KB | Versioned approval and publishing workflow | Only effective `PUBLISHED` knowledge is retrievable by student-facing AI. |
 | Data model | Basic student, conversation, ticket, KB tables | Identity, access, lifecycle, audit, webhook, AI, and health entities | Begin with the operational core in Prisma; add specialized request tables only when their workflows are approved. |
 | Multi-institution claim | Configuration should support many institutions | Later support for schools/campuses | Include `Institution` ownership from the start to prevent a future tenant-isolation rewrite. MVP deploys to one institution. |
-| Dashboard technology | Unspecified frontend | Codex Sites | Reserve `apps/admin-site`; build it after the API workflow and authorization model are tested. |
+| Dashboard technology | Unspecified frontend | Codex Sites | `apps/admin-site` is a static GitHub Pages Registration mockup for interface review. It may call only `/health` and `/ready`; the authenticated staff dashboard follows the API workflow and authorization model. |
 | Expansion order | Broad multi-department AI rollout | One tested workflow at a time | Registration, IT Support, all-core corpus preparation, staged department activation, then organization coordination. |
 
 ## Shared strengths retained

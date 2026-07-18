@@ -23,6 +23,17 @@ npm run lint
 
 The pull request must describe the user-visible behavior, authorization impact, data migration, failure behavior, and tests.
 
+## Branch and documentation alignment
+
+- Treat `main` as the shared integration baseline.
+- Keep `russellcruz` aligned with `main` before beginning related work unless it
+  intentionally contains reviewed collaborator changes.
+- Start new feature branches from current `main` and avoid mixing unrelated
+  documentation cleanup with feature work.
+- Update the relevant document in `docs/` when a change affects scope, setup,
+  operations, privacy, or deployment. Use [docs/README.md](docs/README.md) to
+  locate the authoritative guide.
+
 ## Definition of done for a feature
 
 - Acceptance criteria are written and met.

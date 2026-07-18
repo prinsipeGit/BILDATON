@@ -21,6 +21,8 @@ The deployment workflow runs when `main` changes under `apps/admin-site`. A repo
 CORS_ALLOWED_ORIGINS=https://prinsipegit.github.io
 ```
 
+The full repository-owner handoff is in [GitHub Pages Deployment](../../docs/operations/GITHUB_PAGES_DEPLOYMENT.md). The Pages workflow is safe to publish without `LUCA_API_BASE_URL`; the mockup will then show that no API origin is configured. Never use a Supabase database URL, `localhost`, or a secret value for this public browser configuration.
+
 ## Local preview
 
 Run any static server with `apps/admin-site` as its root. For example:

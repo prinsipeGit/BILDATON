@@ -10,6 +10,9 @@ This repository is at the **expansion-foundation** stage. It contains the Regist
 
 Read these documents before implementing features:
 
+Start with [`docs/README.md`](docs/README.md) for the documentation map,
+current scope, branch convention, and operations handoff.
+
 1. [`docs/PLAN_COMPARISON.md`](docs/PLAN_COMPARISON.md) — decisions made while reconciling the original PRD and Luca plan.
 2. [`docs/architecture/FOUNDATION.md`](docs/architecture/FOUNDATION.md) — system boundaries and first vertical slice.
 3. [`docs/decisions/0001-technical-baseline.md`](docs/decisions/0001-technical-baseline.md) — selected technical baseline.
@@ -67,3 +70,11 @@ Messenger webhook -> deduplicated inbound event -> conversation
 ```
 
 IT Support follows the same deterministic path. Student-facing RAG activates per department only after approved sources, staff routing, and publication gates are in place. SIS access, attachments, voice transcription, payments, and record changes remain out of scope.
+
+## Static Pages mockup
+
+`apps/admin-site` contains a Registration-first GitHub Pages mockup for
+interface review. It may call the public health endpoints only and keeps ticket,
+conversation, and escalation interactions in the browser until those APIs are
+implemented. See [GitHub Pages Deployment](docs/operations/GITHUB_PAGES_DEPLOYMENT.md)
+for repository setup and deployment steps.

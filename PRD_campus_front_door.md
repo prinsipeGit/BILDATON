@@ -2,7 +2,7 @@
 ## AI-Driven University Support Triage System
 
 **Version:** 1.0
-**Status:** Implementation-ready
+**Status:** Product-vision reference. The repository implementation baseline is the Registration-first workflow described in [`docs/architecture/FOUNDATION.md`](docs/architecture/FOUNDATION.md) and reconciled in [`docs/PLAN_COMPARISON.md`](docs/PLAN_COMPARISON.md).
 **Scope note:** This PRD is institution-agnostic by design. All department names, terminology, and workflows are configurable defaults, not hardcoded assumptions — the system is built to run at a Philippine university, a US university, or any institution with a comparable administrative structure, without a re-architecture.
 
 ---
