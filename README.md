@@ -6,7 +6,7 @@ Luca assists with classification, information collection, approved-knowledge sea
 
 ## Repository status
 
-This repository is at the **foundation** stage. It contains the agreed architecture, initial domain contracts, hosted Supabase schema, service entry points, and Redis definition. Messenger credentials, Redis hosting, and OpenAI are not configured yet.
+This repository is at the **expansion-foundation** stage. It contains the Registration/IT delivery baseline, hosted Supabase schema, department activation controls, retrieval and citation contracts, verification guards, and organization-workflow models. Messenger, Redis, SSO, and OpenAI remain deployment integrations and are not configured in Git.
 
 Read these documents before implementing features:
 
@@ -66,4 +66,4 @@ Messenger webhook -> deduplicated inbound event -> conversation
 -> Registration ticket -> authorized staff reply -> Messenger delivery job
 ```
 
-FAQ generation, embeddings, attachments, voice transcription, and SIS access come after the auditable ticket path is working.
+IT Support follows the same deterministic path. Student-facing RAG activates per department only after approved sources, staff routing, and publication gates are in place. SIS access, attachments, voice transcription, payments, and record changes remain out of scope.

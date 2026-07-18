@@ -28,11 +28,25 @@ export interface MetaConfig {
   pageAccessToken: string;
 }
 
+export interface RagConfig {
+  apiKey: string;
+  embeddingModel: string;
+  answerModel: string;
+}
+
 export function loadMetaConfig(environment: NodeJS.ProcessEnv): MetaConfig {
   return {
     appSecret: requireSecret(environment, "META_APP_SECRET"),
     verifyToken: requireSecret(environment, "META_VERIFY_TOKEN"),
     pageAccessToken: requireSecret(environment, "META_PAGE_ACCESS_TOKEN")
+  };
+}
+
+export function loadRagConfig(environment: NodeJS.ProcessEnv): RagConfig {
+  return {
+    apiKey: requireSecret(environment, "OPENAI_API_KEY"),
+    embeddingModel: environment.OPENAI_EMBEDDING_MODEL?.trim() || "text-embedding-3-small",
+    answerModel: environment.OPENAI_ANSWER_MODEL?.trim() || "gpt-4.1-mini"
   };
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { loadConfig, loadMetaConfig } from "./index.js";
+import { loadConfig, loadMetaConfig, loadRagConfig } from "./index.js";
 
 const validEnvironment = {
   NODE_ENV: "test",
@@ -40,5 +40,15 @@ describe("loadMetaConfig", () => {
         META_PAGE_ACCESS_TOKEN: "page-token"
       })
     ).toThrow("META_APP_SECRET is required");
+  });
+});
+
+describe("loadRagConfig", () => {
+  it("uses secure credentials with explicit model defaults", () => {
+    expect(loadRagConfig({ OPENAI_API_KEY: "test-key" })).toEqual({
+      apiKey: "test-key",
+      embeddingModel: "text-embedding-3-small",
+      answerModel: "gpt-4.1-mini"
+    });
   });
 });

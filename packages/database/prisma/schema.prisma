@@ -61,6 +61,41 @@ enum DeliveryStatus {
   PERMANENT_FAILURE
 }
 
+enum DepartmentActivationStatus {
+  PLANNED
+  READY
+  ACTIVE
+  SUSPENDED
+}
+
+enum KnowledgeAudience {
+  STUDENT
+  STAFF
+}
+
+enum OrganizationRequestStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  NEEDS_INFORMATION
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum VenueConfirmationStatus {
+  NOT_REQUESTED
+  PENDING
+  CONFIRMED
+  UNAVAILABLE
+}
+
+enum OrganizationReviewDecision {
+  NEEDS_INFORMATION
+  APPROVED
+  REJECTED
+}
+
 enum KnowledgeStatus {
   DRAFT
   FOR_REVIEW
@@ -84,6 +119,7 @@ model Institution {
   auditLogs      AuditLog[]
   knowledgeDocs  KnowledgeDocument[]
   outboundDeliveries OutboundDelivery[]
+  organizations  Organization[]
 }
 
 model Department {
@@ -98,6 +134,8 @@ model Department {
   memberships   DepartmentMembership[]
   tickets       Ticket[]
   knowledgeDocs KnowledgeDocument[]
+  configuration DepartmentConfiguration?
+  organizationRequestsForReview OrganizationRequest[] @relation("OrganizationRequestReviewDepartment")
 
   @@unique([institutionId, slug])
   @@index([institutionId, enabled])
@@ -117,6 +155,8 @@ model User {
   memberships    DepartmentMembership[]
   assignedTickets Ticket[]              @relation("TicketAssignee")
   internalNotes  InternalNote[]
+  sourceOwnedDepartmentConfigurations DepartmentConfiguration[] @relation("DepartmentSourceOwner")
+  organizationRequestReviews OrganizationRequestReview[] @relation("OrganizationRequestReviewer")
 
   @@unique([institutionId, externalAuthId])
   @@unique([institutionId, email])
@@ -142,6 +182,23 @@ model DepartmentMembership {
   @@index([departmentId, role])
 }
 
+model DepartmentConfiguration {
+  id                 String                     @id @default(uuid()) @db.Uuid
+  departmentId       String                     @unique @db.Uuid
+  sourceOwnerUserId  String?                    @db.Uuid
+  routingDestination String?
+  operatingHours     String?
+  escalationRules    Json?
+  publicFaqEnabled   Boolean                    @default(false)
+  activationStatus   DepartmentActivationStatus @default(PLANNED)
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  department         Department                 @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  sourceOwner        User?                      @relation("DepartmentSourceOwner", fields: [sourceOwnerUserId], references: [id], onDelete: SetNull)
+
+  @@index([activationStatus, publicFaqEnabled])
+}
+
 model Student {
   id                String              @id @default(uuid()) @db.Uuid
   institutionId     String              @db.Uuid
@@ -152,6 +209,7 @@ model Student {
   messengerIds      MessengerIdentity[]
   verifications     StudentVerification[]
   conversations     Conversation[]
+  organizationOfficers OrganizationOfficer[]
 
   @@unique([institutionId, externalStudentId])
 }
@@ -184,6 +242,86 @@ model StudentVerification {
   messengerIdentity   MessengerIdentity @relation(fields: [messengerIdentityId], references: [id], onDelete: Cascade)
 
   @@index([messengerIdentityId, expiresAt])
+}
+
+model Organization {
+  id            String                @id @default(uuid()) @db.Uuid
+  institutionId String                @db.Uuid
+  name          String
+  slug          String
+  enabled       Boolean               @default(true)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  institution   Institution           @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  officers      OrganizationOfficer[]
+  requests      OrganizationRequest[]
+
+  @@unique([institutionId, slug])
+  @@index([institutionId, enabled])
+}
+
+model OrganizationOfficer {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  studentId      String       @db.Uuid
+  title          String
+  verifiedAt     DateTime?
+  revokedAt      DateTime?
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  requests       OrganizationRequest[] @relation("OrganizationRequestSubmitter")
+
+  @@unique([organizationId, studentId])
+  @@index([studentId, revokedAt])
+}
+
+model OrganizationRequest {
+  id                   String                    @id @default(uuid()) @db.Uuid
+  organizationId       String                    @db.Uuid
+  submitterOfficerId   String                    @db.Uuid
+  reviewingDepartmentId String                   @db.Uuid
+  title                String
+  description          String
+  requestedStartAt     DateTime?
+  requestedEndAt       DateTime?
+  venueName            String?
+  venueConfirmation    VenueConfirmationStatus  @default(NOT_REQUESTED)
+  status               OrganizationRequestStatus @default(DRAFT)
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
+  organization         Organization               @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  submitterOfficer     OrganizationOfficer        @relation("OrganizationRequestSubmitter", fields: [submitterOfficerId], references: [id], onDelete: Restrict)
+  reviewingDepartment  Department                 @relation("OrganizationRequestReviewDepartment", fields: [reviewingDepartmentId], references: [id], onDelete: Restrict)
+  reviews              OrganizationRequestReview[]
+  fileLinks            OrganizationRequestFileLink[]
+
+  @@index([reviewingDepartmentId, status, createdAt])
+  @@index([organizationId, createdAt])
+}
+
+model OrganizationRequestReview {
+  id                    String                     @id @default(uuid()) @db.Uuid
+  organizationRequestId String                     @db.Uuid
+  reviewerUserId        String                     @db.Uuid
+  decision              OrganizationReviewDecision
+  comment               String?
+  createdAt             DateTime                   @default(now())
+  organizationRequest   OrganizationRequest        @relation(fields: [organizationRequestId], references: [id], onDelete: Cascade)
+  reviewer              User                       @relation("OrganizationRequestReviewer", fields: [reviewerUserId], references: [id], onDelete: Restrict)
+
+  @@index([organizationRequestId, createdAt])
+}
+
+model OrganizationRequestFileLink {
+  id                    String              @id @default(uuid()) @db.Uuid
+  organizationRequestId String              @db.Uuid
+  label                 String
+  url                   String
+  createdAt             DateTime            @default(now())
+  organizationRequest   OrganizationRequest @relation(fields: [organizationRequestId], references: [id], onDelete: Cascade)
+
+  @@index([organizationRequestId])
 }
 
 model Conversation {
@@ -333,6 +471,8 @@ model KnowledgeDocument {
   institutionId String             @db.Uuid
   departmentId  String             @db.Uuid
   title         String
+  audience      KnowledgeAudience  @default(STUDENT)
+  sourceUri     String?
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   institution   Institution        @relation(fields: [institutionId], references: [id], onDelete: Restrict)
@@ -355,9 +495,27 @@ model KnowledgeVersion {
   approvedAt    DateTime?
   createdAt     DateTime           @default(now())
   document      KnowledgeDocument  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  chunks        KnowledgeChunk[]
 
   @@unique([documentId, version])
   @@index([status, effectiveFrom, effectiveTo])
+}
+
+model KnowledgeChunk {
+  id                String           @id @default(uuid()) @db.Uuid
+  documentVersionId String           @db.Uuid
+  institutionId     String           @db.Uuid
+  departmentId      String           @db.Uuid
+  chunkIndex        Int
+  content           String
+  embeddingModel    String?
+  embedding         Unsupported("vector")?
+  createdAt         DateTime         @default(now())
+  documentVersion   KnowledgeVersion @relation(fields: [documentVersionId], references: [id], onDelete: Cascade)
+  citations         KnowledgeCitation[]
+
+  @@unique([documentVersionId, chunkIndex])
+  @@index([institutionId, departmentId])
 }
 
 model AiRun {
@@ -372,9 +530,22 @@ model AiRun {
   createdAt        DateTime @default(now())
   completedAt      DateTime?
   toolCalls        AiToolCall[]
+  citations        KnowledgeCitation[]
 
   @@index([institutionId, createdAt])
   @@index([conversationId])
+}
+
+model KnowledgeCitation {
+  id                String         @id @default(uuid()) @db.Uuid
+  aiRunId           String         @db.Uuid
+  knowledgeChunkId  String         @db.Uuid
+  createdAt         DateTime       @default(now())
+  aiRun             AiRun          @relation(fields: [aiRunId], references: [id], onDelete: Cascade)
+  knowledgeChunk    KnowledgeChunk @relation(fields: [knowledgeChunkId], references: [id], onDelete: Restrict)
+
+  @@unique([aiRunId, knowledgeChunkId])
+  @@index([knowledgeChunkId])
 }
 
 model AiToolCall {
