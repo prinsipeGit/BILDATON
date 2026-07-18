@@ -1,6 +1,6 @@
 # Luca (BILDATON)
 
-Luca is an AI-assisted university helpdesk. The first vertical slice accepts a student request, creates a traceable IT Support ticket, lets authorized staff respond, and returns the response through the originating channel.
+Luca is an AI-assisted university helpdesk. The first vertical slice accepts a student request, creates a traceable Registration ticket, lets authorized staff respond, and returns the response through the originating channel.
 
 Luca assists with classification, information collection, approved-knowledge search, and drafting. Sensitive decisions and record changes remain with authorized school personnel.
 
@@ -63,7 +63,7 @@ Build only this path first:
 
 ```text
 Messenger webhook -> deduplicated inbound event -> conversation
--> IT Support ticket -> authorized staff reply -> Messenger delivery job
+-> Registration ticket -> authorized staff reply -> Messenger delivery job
 ```
 
 FAQ generation, embeddings, attachments, voice transcription, and SIS access come after the auditable ticket path is working.
