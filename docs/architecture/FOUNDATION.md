@@ -8,8 +8,8 @@ The first deliverable proves one auditable workflow:
 2. The API verifies the signature and stores the provider event ID exactly once.
 3. The API queues processing and acknowledges Meta quickly.
 4. The worker creates or finds the anonymous conversation and persists the message.
-5. The request becomes an IT Support ticket with a public reference number.
-6. An authorized IT staff member views the ticket and sends a reply.
+5. The request becomes a Registration ticket with a public reference number.
+6. An authorized Registration staff member views the ticket and sends a reply.
 7. The worker delivers the reply through Messenger and records the outcome.
 8. Every state change produces an audit event.
 
@@ -42,9 +42,9 @@ Modules share one deployment and database initially, but may not bypass another 
 ## Required implementation order
 
 1. Configuration validation and health endpoint.
-2. Database migrations and seed one institution plus IT Support.
+2. Database migrations and seed one institution plus Registration.
 3. Webhook verification and idempotent event storage.
-4. Conversation/message persistence and IT ticket creation.
+4. Conversation/message persistence and Registration ticket creation.
 5. Staff authentication and department authorization.
 6. Staff reply plus queued Messenger delivery.
 7. Audit and failure-review surfaces.

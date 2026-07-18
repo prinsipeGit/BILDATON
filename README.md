@@ -1,12 +1,12 @@
 # Luca (BILDATON)
 
-Luca is an AI-assisted university helpdesk. The first vertical slice accepts a student request, creates a traceable IT Support ticket, lets authorized staff respond, and returns the response through the originating channel.
+Luca is an AI-assisted university helpdesk. The first vertical slice accepts a student request, creates a traceable Registration ticket, lets authorized staff respond, and returns the response through the originating channel.
 
 Luca assists with classification, information collection, approved-knowledge search, and drafting. Sensitive decisions and record changes remain with authorized school personnel.
 
 ## Repository status
 
-This repository is at the **foundation** stage. It contains the agreed architecture, initial domain contracts, hosted Supabase schema, service entry points, and Redis definition. Messenger credentials, Redis hosting, and OpenAI are not configured yet.
+This repository is at the **expansion-foundation** stage. It contains the Registration/IT delivery baseline, hosted Supabase schema, department activation controls, retrieval and citation contracts, verification guards, and organization-workflow models. Messenger, Redis, SSO, and OpenAI remain deployment integrations and are not configured in Git.
 
 Read these documents before implementing features:
 
@@ -63,7 +63,7 @@ Build only this path first:
 
 ```text
 Messenger webhook -> deduplicated inbound event -> conversation
--> IT Support ticket -> authorized staff reply -> Messenger delivery job
+-> Registration ticket -> authorized staff reply -> Messenger delivery job
 ```
 
-FAQ generation, embeddings, attachments, voice transcription, and SIS access come after the auditable ticket path is working.
+IT Support follows the same deterministic path. Student-facing RAG activates per department only after approved sources, staff routing, and publication gates are in place. SIS access, attachments, voice transcription, payments, and record changes remain out of scope.

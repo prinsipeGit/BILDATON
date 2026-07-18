@@ -8,7 +8,7 @@ The Luca plan is the implementation baseline. The original Campus Front Door PRD
 |---|---|---|---|
 | Product posture | Autonomous FAQ resolution is the primary goal | AI assists; humans retain sensitive decisions | AI may autonomously answer only published general FAQs. Every sensitive or uncertain request becomes a human-owned ticket. |
 | Initial channels | Web and chat are P0 | Messenger first; web portal later | Messenger first. The staff dashboard is web-based; a student web portal is later scope. |
-| Pilot | Multiple core departments implied | IT Support first | One IT Support vertical slice before adding departments. Department configuration remains generic. |
+| Pilot | Multiple core departments implied | Registration first | One Registration vertical slice before adding departments. Department configuration remains generic. |
 | Backend | Python and FastAPI | TypeScript with NestJS or Fastify | TypeScript and Fastify in an npm workspace modular monolith. |
 | Finance taxonomy | Finance combines billing and aid by default | Financial Aid and Bursar/Finance are separate | Configurable departments; seed them separately when the institution actually has both offices. |
 | Ticket behavior | A ticket is created only on escalation | Every actionable request receives a reference number | General published FAQs may finish without a ticket. Requests needing work, follow-up, private data, or staff action create a ticket. |
@@ -18,6 +18,7 @@ The Luca plan is the implementation baseline. The original Campus Front Door PRD
 | Data model | Basic student, conversation, ticket, KB tables | Identity, access, lifecycle, audit, webhook, AI, and health entities | Begin with the operational core in Prisma; add specialized request tables only when their workflows are approved. |
 | Multi-institution claim | Configuration should support many institutions | Later support for schools/campuses | Include `Institution` ownership from the start to prevent a future tenant-isolation rewrite. MVP deploys to one institution. |
 | Dashboard technology | Unspecified frontend | Codex Sites | Reserve `apps/admin-site`; build it after the API workflow and authorization model are tested. |
+| Expansion order | Broad multi-department AI rollout | One tested workflow at a time | Registration, IT Support, all-core corpus preparation, staged department activation, then organization coordination. |
 
 ## Shared strengths retained
 
@@ -42,7 +43,7 @@ The Luca plan is the implementation baseline. The original Campus Front Door PRD
 
 These require stakeholder input and must not be invented by developers:
 
-1. The exact IT Support pilot workflow and required ticket fields.
+1. The exact Registration pilot workflow and required ticket fields.
 2. Priority definitions and service-level targets.
 3. Official safety and emergency handoff destinations and operating hours.
 4. Data retention periods for messages, audit events, and failed webhooks.
