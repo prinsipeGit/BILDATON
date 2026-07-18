@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": "./src/index.ts",
   "scripts": {
     "generate": "node --env-file=../../.env ../../node_modules/prisma/build/index.js generate",
     "migrate:dev": "node --env-file=../../.env ../../node_modules/prisma/build/index.js migrate dev",
+    "migrate:deploy": "node --env-file=../../.env ../../node_modules/prisma/build/index.js migrate deploy",
     "validate": "node --env-file=../../.env ../../node_modules/prisma/build/index.js validate",
     "seed": "node --env-file=../../.env prisma/seed.mjs",
     "build": "tsc -p tsconfig.json",

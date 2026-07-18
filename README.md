@@ -6,7 +6,7 @@ Luca assists with classification, information collection, approved-knowledge sea
 
 ## Repository status
 
-This repository is at the **foundation** stage. It contains the agreed architecture, initial domain contracts, database schema, service entry points, and local-infrastructure definitions. Messenger credentials, Supabase, Redis, and OpenAI are not configured yet.
+This repository is at the **foundation** stage. It contains the agreed architecture, initial domain contracts, hosted Supabase schema, service entry points, and Redis definition. Messenger credentials, Redis hosting, and OpenAI are not configured yet.
 
 Read these documents before implementing features:
 
@@ -19,20 +19,26 @@ Read these documents before implementing features:
 
 - Node.js 24 or later
 - npm 11 or later
-- Docker with Compose (for PostgreSQL and Redis)
+- A hosted Supabase project
+- Redis, either local through Docker Compose or a hosted Redis provider
 
 ## First-time setup
 
 ```bash
 cp .env.example .env
 npm install
-docker compose up -d
+# Fill DATABASE_URL and DIRECT_URL from Supabase Dashboard -> Connect.
+# Start only Redis locally when a hosted REDIS_URL is not available.
+docker compose up -d redis
 npm run db:generate
-npm run db:migrate
+npm run db:deploy
+npm run db:seed
 npm run dev
 ```
 
 Do not add real credentials to `.env.example` or commit a local `.env` file.
+
+`DATABASE_URL` is the runtime URL. Use Supabase's session pooler for a long-running API, or transaction pooler for serverless hosting. `DIRECT_URL` is the migration URL: prefer Supabase's direct connection, or use the session pooler when the migration environment is IPv4-only. Never use the transaction-mode pooler for migrations. Use `npm run db:deploy` to apply committed migrations to hosted Supabase; reserve `npm run db:migrate` for creating migrations during schema development.
 
 ## Workspace layout
 

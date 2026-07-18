@@ -2,6 +2,7 @@
   "name": "luca-helpdesk",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "AI-assisted university helpdesk",
   "engines": {
     "node": ">=24",
@@ -16,14 +17,18 @@
     "dev": "npm run dev --workspace=@luca/api",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
+    "lint": "eslint .",
     "db:generate": "npm run generate --workspace=@luca/database",
     "db:migrate": "npm run migrate:dev --workspace=@luca/database",
+    "db:deploy": "npm run migrate:deploy --workspace=@luca/database",
     "db:seed": "npm run seed --workspace=@luca/database"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.0.10",
+    "eslint": "^10.7.0",
     "typescript": "^5.8.3",
+    "typescript-eslint": "^8.64.0",
     "vitest": "^3.2.4"
   }
 }
