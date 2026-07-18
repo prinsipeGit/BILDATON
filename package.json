@@ -18,7 +18,8 @@
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "db:generate": "npm run generate --workspace=@luca/database",
-    "db:migrate": "npm run migrate:dev --workspace=@luca/database"
+    "db:migrate": "npm run migrate:dev --workspace=@luca/database",
+    "db:seed": "npm run seed --workspace=@luca/database"
   },
   "devDependencies": {
     "@types/node": "^24.0.10",
