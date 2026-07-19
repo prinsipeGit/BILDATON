@@ -1,12 +1,12 @@
 # Luca (BILDATON)
 
-Luca is an AI-assisted university helpdesk. The first vertical slice accepts a student request, creates a traceable Registration ticket, lets authorized staff respond, and returns the response through the originating channel.
+Luca is a Supabase-grounded university helpdesk for Facebook Messenger. It answers from published knowledge, collects structured Registration and Registrar requests, records conversations for staff oversight, and sends status updates through the originating channel.
 
 Luca assists with classification, information collection, approved-knowledge search, and drafting. Sensitive decisions and record changes remain with authorized school personnel.
 
 ## Repository status
 
-This repository is at the **expansion-foundation** stage. It contains the Registration/IT delivery baseline, hosted Supabase schema, department activation controls, retrieval and citation contracts, verification guards, and organization-workflow models. Messenger, Redis, SSO, and OpenAI remain deployment integrations and are not configured in Git.
+This repository contains the expansion foundation plus the first executable chatbot slice: signed Messenger webhooks, durable event and conversation storage, department and organization controls, published-knowledge retrieval, grounded OpenAI responses, Registrar request workflows, and authenticated staff operations. External credentials and hosted runtime configuration are intentionally not stored in Git.
 
 Read these documents before implementing features:
 
@@ -23,7 +23,6 @@ current scope, branch convention, and operations handoff.
 - Node.js 24 or later
 - npm 11 or later
 - A hosted Supabase project
-- Redis, either local through Docker Compose or a hosted Redis provider
 
 ## First-time setup
 
@@ -31,8 +30,6 @@ current scope, branch convention, and operations handoff.
 cp .env.example .env
 npm install
 # Fill DATABASE_URL and DIRECT_URL from Supabase Dashboard -> Connect.
-# Start only Redis locally when a hosted REDIS_URL is not available.
-docker compose up -d redis
 npm run db:generate
 npm run db:deploy
 npm run db:seed
@@ -48,7 +45,7 @@ Do not add real credentials to `.env.example` or commit a local `.env` file.
 ```text
 apps/
   api/          HTTP API and channel webhooks
-  worker/       queued AI, notification, and retry work
+  worker/       reserved for future high-volume background work
   admin-site/   staff dashboard placeholder
 packages/
   ai/           prompts, retrieval, schemas, and approved tools
@@ -60,16 +57,16 @@ docs/           architecture, decisions, privacy, API, and operations
 tests/          cross-package integration and end-to-end tests
 ```
 
-## First implementation target
+## Current implementation target
 
 Build only this path first:
 
 ```text
-Messenger webhook -> deduplicated inbound event -> conversation
--> Registration ticket -> authorized staff reply -> Messenger delivery job
+Messenger webhook -> deduplicated inbound event -> Supabase conversation
+-> Registrar request or published knowledge answer -> Messenger reply/status update
 ```
 
-IT Support follows the same deterministic path. Student-facing RAG activates per department only after approved sources, staff routing, and publication gates are in place. SIS access, attachments, voice transcription, payments, and record changes remain out of scope.
+Registration and IT Support follow the same department-governance and authorization boundaries. SIS access, attachments, voice transcription, payments, and student-record changes remain out of scope.
 
 ## Static Pages mockup
 

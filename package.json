@@ -17,7 +17,7 @@
     "dev": "npm run dev --workspace=@luca/api",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "lint": "eslint .",
+    "lint": "eslint . && npm run lint --workspace=@luca/admin-site",
     "db:generate": "npm run generate --workspace=@luca/database",
     "db:migrate": "npm run migrate:dev --workspace=@luca/database",
     "db:deploy": "npm run migrate:deploy --workspace=@luca/database",

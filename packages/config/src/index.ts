@@ -2,7 +2,6 @@ export interface AppConfig {
   nodeEnv: "development" | "test" | "production";
   port: number;
   databaseUrl: string;
-  redisUrl: string;
   corsAllowedOrigins: readonly string[];
 }
 
@@ -18,10 +17,9 @@ export function loadConfig(environment: NodeJS.ProcessEnv): AppConfig {
   }
 
   const databaseUrl = requireUrl(environment, "DATABASE_URL", ["postgres:", "postgresql:"]);
-  const redisUrl = requireUrl(environment, "REDIS_URL", ["redis:", "rediss:"]);
   const corsAllowedOrigins = parseCorsAllowedOrigins(environment.CORS_ALLOWED_ORIGINS);
 
-  return { nodeEnv, port, databaseUrl, redisUrl, corsAllowedOrigins };
+  return { nodeEnv, port, databaseUrl, corsAllowedOrigins };
 }
 
 export interface MetaConfig {
@@ -48,7 +46,19 @@ export function loadRagConfig(environment: NodeJS.ProcessEnv): RagConfig {
   return {
     apiKey: requireSecret(environment, "OPENAI_API_KEY"),
     embeddingModel: environment.OPENAI_EMBEDDING_MODEL?.trim() || "text-embedding-3-small",
-    answerModel: environment.OPENAI_ANSWER_MODEL?.trim() || "gpt-4.1-mini"
+    answerModel: environment.OPENAI_ANSWER_MODEL?.trim() || "gpt-5.6-terra"
+  };
+}
+
+export interface OpenAIConfig {
+  apiKey: string;
+  model: string;
+}
+
+export function loadOpenAIConfig(environment: NodeJS.ProcessEnv): OpenAIConfig {
+  return {
+    apiKey: requireSecret(environment, "OPENAI_API_KEY"),
+    model: environment.OPENAI_MODEL?.trim() || "gpt-5.6-terra"
   };
 }
 

@@ -1,19 +1,21 @@
 # Foundation Architecture
 
-## First vertical slice
+## Simplified chatbot vertical slice
 
 The first deliverable proves one auditable workflow:
 
 1. Meta sends a signed Messenger webhook.
 2. The API verifies the signature and stores the provider event ID exactly once.
-3. The API queues processing and acknowledges Meta quickly.
-4. The worker creates or finds the anonymous conversation and persists the message.
-5. The request becomes a Registration ticket with a public reference number.
-6. An authorized Registration staff member views the ticket and sends a reply.
-7. The worker delivers the reply through Messenger and records the outcome.
-8. Every state change produces an audit event.
+3. The API acknowledges Meta after durable storage.
+4. A small database-backed processor creates or finds the anonymous conversation and message.
+5. Structured Registrar requests enter an auditable staff queue; general questions load active rules and effective published knowledge.
+6. OpenAI drafts general answers only from that material, while authorized staff control request status changes.
+7. Answers, citations, AI runs, status events, and delivery state are stored in Supabase.
+8. Answers and request-status notifications are delivered through Messenger.
 
-AI classification is added only after this non-AI path is reliable.
+Retryable webhook failures are reclaimed by the database-backed processor up to five total attempts. After that, they remain visible in the operations dashboard for staff investigation instead of retrying forever.
+
+Redis and a separate worker are intentionally deferred until measured traffic or reliability needs justify them.
 
 ## Trust boundaries
 
@@ -42,14 +44,14 @@ Modules share one deployment and database initially, but may not bypass another 
 ## Required implementation order
 
 1. Configuration validation and health endpoint.
-2. Database migrations and seed one institution plus Registration.
+2. Database migrations and seed one institution.
 3. Webhook verification and idempotent event storage.
-4. Conversation/message persistence and Registration ticket creation.
-5. Staff authentication and department authorization.
-6. Staff reply plus queued Messenger delivery.
-7. Audit and failure-review surfaces.
-8. Published-knowledge retrieval.
-9. AI classification, drafting, and safety evaluation.
+4. Conversation and message persistence.
+5. Structured Registrar requests plus staff authentication and authorization.
+6. Active rules, published-knowledge retrieval, and grounded OpenAI answers.
+7. Messenger delivery, status notifications, and retry handling.
+8. Staff operations, audit, and failure-review surfaces.
+9. Embeddings and higher-scale processing when measured needs justify them.
 
 ## Explicitly deferred
 

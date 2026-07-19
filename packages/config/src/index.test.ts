@@ -4,8 +4,7 @@ import { loadConfig, loadMetaConfig, loadRagConfig } from "./index.js";
 const validEnvironment = {
   NODE_ENV: "test",
   PORT: "3001",
-  DATABASE_URL: "postgresql://user:password@example.test:5432/postgres",
-  REDIS_URL: "redis://localhost:6379"
+  DATABASE_URL: "postgresql://user:password@example.test:5432/postgres"
 };
 
 describe("loadConfig", () => {
@@ -14,7 +13,6 @@ describe("loadConfig", () => {
       nodeEnv: "test",
       port: 3001,
       databaseUrl: validEnvironment.DATABASE_URL,
-      redisUrl: validEnvironment.REDIS_URL,
       corsAllowedOrigins: []
     });
   });
@@ -22,12 +20,6 @@ describe("loadConfig", () => {
   it("rejects a missing database URL", () => {
     expect(() => loadConfig({ ...validEnvironment, DATABASE_URL: undefined })).toThrow(
       "DATABASE_URL is required"
-    );
-  });
-
-  it("rejects an unsupported Redis protocol", () => {
-    expect(() => loadConfig({ ...validEnvironment, REDIS_URL: "https://example.test" })).toThrow(
-      "REDIS_URL must use redis: or rediss:"
     );
   });
 
@@ -63,7 +55,7 @@ describe("loadRagConfig", () => {
     expect(loadRagConfig({ OPENAI_API_KEY: "test-key" })).toEqual({
       apiKey: "test-key",
       embeddingModel: "text-embedding-3-small",
-      answerModel: "gpt-4.1-mini"
+      answerModel: "gpt-5.6-terra"
     });
   });
 });

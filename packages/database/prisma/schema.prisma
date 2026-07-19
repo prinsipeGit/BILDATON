@@ -104,22 +104,44 @@ enum KnowledgeStatus {
   ARCHIVED
 }
 
+enum RegistrarRequestKind {
+  DOCUMENT
+  APPOINTMENT
+}
+
+enum RegistrarRequestStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  NEEDS_INFORMATION
+  APPROVED
+  PROCESSING
+  SCHEDULED
+  READY_FOR_PICKUP
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
 model Institution {
-  id             String         @id @default(uuid()) @db.Uuid
-  name           String
-  slug           String         @unique
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  departments    Department[]
-  users          User[]
-  students       Student[]
-  conversations  Conversation[]
-  tickets        Ticket[]
-  webhookEvents  WebhookEvent[]
-  auditLogs      AuditLog[]
-  knowledgeDocs  KnowledgeDocument[]
+  id                 String              @id @default(uuid()) @db.Uuid
+  name               String
+  slug               String              @unique
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  departments        Department[]
+  users              User[]
+  students           Student[]
+  conversations      Conversation[]
+  tickets            Ticket[]
+  webhookEvents      WebhookEvent[]
+  auditLogs          AuditLog[]
+  knowledgeDocs      KnowledgeDocument[]
   outboundDeliveries OutboundDelivery[]
-  organizations  Organization[]
+  organizations      Organization[]
+  chatbotRules       ChatbotRule[]
+  aiRuns             AiRun[]
+  registrarRequests  RegistrarRequest[]
 }
 
 model Department {
@@ -200,12 +222,12 @@ model DepartmentConfiguration {
 }
 
 model Student {
-  id                String              @id @default(uuid()) @db.Uuid
-  institutionId     String              @db.Uuid
+  id                String                @id @default(uuid()) @db.Uuid
+  institutionId     String                @db.Uuid
   externalStudentId String
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  institution       Institution         @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  institution       Institution           @relation(fields: [institutionId], references: [id], onDelete: Restrict)
   messengerIds      MessengerIdentity[]
   verifications     StudentVerification[]
   conversations     Conversation[]
@@ -215,16 +237,17 @@ model Student {
 }
 
 model MessengerIdentity {
-  id               String                @id @default(uuid()) @db.Uuid
-  institutionId    String                @db.Uuid
-  pageId           String
-  senderId         String
-  studentId        String?               @db.Uuid
-  linkedAt         DateTime?
-  createdAt        DateTime              @default(now())
-  student          Student?              @relation(fields: [studentId], references: [id], onDelete: SetNull)
-  conversations    Conversation[]
-  verifications    StudentVerification[]
+  id                String                @id @default(uuid()) @db.Uuid
+  institutionId     String                @db.Uuid
+  pageId            String
+  senderId          String
+  studentId         String?               @db.Uuid
+  linkedAt          DateTime?
+  createdAt         DateTime              @default(now())
+  student           Student?              @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  conversations     Conversation[]
+  verifications     StudentVerification[]
+  registrarRequests RegistrarRequest[]
 
   @@unique([institutionId, pageId, senderId])
   @@index([studentId])
@@ -325,56 +348,123 @@ model OrganizationRequestFileLink {
 }
 
 model Conversation {
-  id                  String                @id @default(uuid()) @db.Uuid
-  institutionId       String                @db.Uuid
-  studentId           String?               @db.Uuid
-  messengerIdentityId String?               @db.Uuid
+  id                  String              @id @default(uuid()) @db.Uuid
+  institutionId       String              @db.Uuid
+  studentId           String?             @db.Uuid
+  messengerIdentityId String?             @db.Uuid
   channel             ConversationChannel
-  status              String                @default("OPEN")
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  institution         Institution           @relation(fields: [institutionId], references: [id], onDelete: Restrict)
-  student             Student?              @relation(fields: [studentId], references: [id], onDelete: SetNull)
-  messengerIdentity   MessengerIdentity?    @relation(fields: [messengerIdentityId], references: [id], onDelete: SetNull)
+  status              String              @default("OPEN")
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  institution         Institution         @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  student             Student?            @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  messengerIdentity   MessengerIdentity?  @relation(fields: [messengerIdentityId], references: [id], onDelete: SetNull)
   messages            Message[]
   tickets             Ticket[]
   outboundDeliveries  OutboundDelivery[]
+  aiRuns              AiRun[]
+  registrarRequests   RegistrarRequest[]
 
   @@index([institutionId, channel, updatedAt])
   @@index([messengerIdentityId])
 }
 
+model RegistrarRequest {
+  id                  String                 @id @default(uuid()) @db.Uuid
+  institutionId       String                 @db.Uuid
+  conversationId      String                 @db.Uuid
+  messengerIdentityId String                 @db.Uuid
+  referenceNumber     String
+  kind                RegistrarRequestKind
+  status              RegistrarRequestStatus @default(DRAFT)
+  currentStep         String
+  documentType        String?
+  studentLastName     String?
+  studentIdNumber     String?                @db.VarChar(6)
+  studentEmail        String?
+  appointmentPurpose  String?
+  preferredSchedule   String?
+  studentNote         String?
+  submittedAt         DateTime?
+  readyNotifiedAt     DateTime?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  institution         Institution            @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  conversation        Conversation           @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  messengerIdentity   MessengerIdentity      @relation(fields: [messengerIdentityId], references: [id], onDelete: Restrict)
+  statusEvents        RegistrarStatusEvent[]
+
+  @@unique([institutionId, referenceNumber])
+  @@index([institutionId, status, createdAt])
+  @@index([conversationId, status])
+  @@index([status, readyNotifiedAt])
+}
+
+model RegistrarStatusEvent {
+  id                 String                 @id @default(uuid()) @db.Uuid
+  registrarRequestId String                 @db.Uuid
+  fromStatus         RegistrarRequestStatus
+  toStatus           RegistrarRequestStatus
+  actorType          String                 @default("STAFF")
+  actorId            String?
+  notifiedAt         DateTime?
+  createdAt          DateTime               @default(now())
+  registrarRequest   RegistrarRequest       @relation(fields: [registrarRequestId], references: [id], onDelete: Cascade)
+
+  @@index([notifiedAt, createdAt])
+  @@index([registrarRequestId, createdAt])
+}
+
 model Message {
-  id                String       @id @default(uuid()) @db.Uuid
-  conversationId    String       @db.Uuid
+  id                String            @id @default(uuid()) @db.Uuid
+  conversationId    String            @db.Uuid
   providerMessageId String?
   senderKind        SenderKind
   content           String
   sentAt            DateTime
-  createdAt         DateTime     @default(now())
-  conversation      Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt         DateTime          @default(now())
+  conversation      Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   outboundDelivery  OutboundDelivery?
+  aiRunId           String?           @db.Uuid
+  citations         Json?
+  aiRun             AiRun?            @relation(fields: [aiRunId], references: [id], onDelete: SetNull)
 
   @@unique([conversationId, providerMessageId])
   @@index([conversationId, sentAt])
+  @@index([aiRunId])
+}
+
+model ChatbotRule {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  name          String
+  instructions  String
+  priority      Int         @default(100)
+  active        Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@unique([institutionId, name])
+  @@index([institutionId, active, priority])
 }
 
 model Ticket {
-  id              String          @id @default(uuid()) @db.Uuid
-  institutionId   String          @db.Uuid
-  conversationId  String          @db.Uuid
-  departmentId    String          @db.Uuid
-  assigneeUserId  String?         @db.Uuid
+  id              String              @id @default(uuid()) @db.Uuid
+  institutionId   String              @db.Uuid
+  conversationId  String              @db.Uuid
+  departmentId    String              @db.Uuid
+  assigneeUserId  String?             @db.Uuid
   referenceNumber String
   subject         String
-  status          TicketStatus    @default(NEW)
-  priority        TicketPriority  @default(NORMAL)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  institution     Institution     @relation(fields: [institutionId], references: [id], onDelete: Restrict)
-  conversation    Conversation    @relation(fields: [conversationId], references: [id], onDelete: Restrict)
-  department      Department      @relation(fields: [departmentId], references: [id], onDelete: Restrict)
-  assignee        User?           @relation("TicketAssignee", fields: [assigneeUserId], references: [id], onDelete: SetNull)
+  status          TicketStatus        @default(NEW)
+  priority        TicketPriority      @default(NORMAL)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  institution     Institution         @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  conversation    Conversation        @relation(fields: [conversationId], references: [id], onDelete: Restrict)
+  department      Department          @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  assignee        User?               @relation("TicketAssignee", fields: [assigneeUserId], references: [id], onDelete: SetNull)
   statusHistory   TicketStatusEvent[]
   internalNotes   InternalNote[]
 
@@ -384,14 +474,14 @@ model Ticket {
 }
 
 model TicketStatusEvent {
-  id          String       @id @default(uuid()) @db.Uuid
-  ticketId    String       @db.Uuid
+  id          String        @id @default(uuid()) @db.Uuid
+  ticketId    String        @db.Uuid
   fromStatus  TicketStatus?
   toStatus    TicketStatus
-  actorUserId String?      @db.Uuid
+  actorUserId String?       @db.Uuid
   reason      String?
-  createdAt   DateTime     @default(now())
-  ticket      Ticket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  ticket      Ticket        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@index([ticketId, createdAt])
 }
@@ -414,10 +504,10 @@ model WebhookEvent {
   provider        String
   providerEventId String
   status          ProcessingStatus @default(RECEIVED)
-  payload          Json
-  attempts         Int              @default(0)
-  lastErrorCode    String?
-  receivedAt      DateTime          @default(now())
+  payload         Json
+  attempts        Int              @default(0)
+  lastErrorCode   String?
+  receivedAt      DateTime         @default(now())
   processedAt     DateTime?
   institution     Institution      @relation(fields: [institutionId], references: [id], onDelete: Restrict)
 
@@ -450,17 +540,17 @@ model OutboundDelivery {
 }
 
 model AuditLog {
-  id             String      @id @default(uuid()) @db.Uuid
-  institutionId  String      @db.Uuid
-  actorType      String
-  actorId        String?
-  action         String
-  resourceType   String
-  resourceId     String?
-  requestId      String?
-  metadata       Json?
-  occurredAt     DateTime    @default(now())
-  institution    Institution @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  actorType     String
+  actorId       String?
+  action        String
+  resourceType  String
+  resourceId    String?
+  requestId     String?
+  metadata      Json?
+  occurredAt    DateTime    @default(now())
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Restrict)
 
   @@index([institutionId, occurredAt])
   @@index([resourceType, resourceId])
@@ -483,18 +573,18 @@ model KnowledgeDocument {
 }
 
 model KnowledgeVersion {
-  id            String             @id @default(uuid()) @db.Uuid
-  documentId    String             @db.Uuid
-  version       Int
-  status        KnowledgeStatus    @default(DRAFT)
-  content       String
-  effectiveFrom DateTime?
-  effectiveTo   DateTime?
-  authorUserId  String             @db.Uuid
+  id             String            @id @default(uuid()) @db.Uuid
+  documentId     String            @db.Uuid
+  version        Int
+  status         KnowledgeStatus   @default(DRAFT)
+  content        String
+  effectiveFrom  DateTime?
+  effectiveTo    DateTime?
+  authorUserId   String            @db.Uuid
   approverUserId String?           @db.Uuid
-  approvedAt    DateTime?
-  createdAt     DateTime           @default(now())
-  document      KnowledgeDocument  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  approvedAt     DateTime?
+  createdAt      DateTime          @default(now())
+  document       KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
   chunks        KnowledgeChunk[]
 
   @@unique([documentId, version])
@@ -519,18 +609,24 @@ model KnowledgeChunk {
 }
 
 model AiRun {
-  id              String   @id @default(uuid()) @db.Uuid
-  institutionId   String   @db.Uuid
-  conversationId  String?  @db.Uuid
-  model            String
-  purpose          String
-  promptVersion    String
-  outcome          String
-  rationale        String?
-  createdAt        DateTime @default(now())
-  completedAt      DateTime?
-  toolCalls        AiToolCall[]
-  citations        KnowledgeCitation[]
+  id                  String        @id @default(uuid()) @db.Uuid
+  institutionId       String        @db.Uuid
+  conversationId      String?       @db.Uuid
+  model               String
+  purpose             String
+  promptVersion       String
+  outcome             String
+  rationale           String?
+  createdAt           DateTime      @default(now())
+  completedAt         DateTime?
+  responseId          String?
+  knowledgeVersionIds Json?
+  errorCode           String?
+  toolCalls           AiToolCall[]
+  institution         Institution   @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  conversation        Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  messages            Message[]
+  citations           KnowledgeCitation[]
 
   @@index([institutionId, createdAt])
   @@index([conversationId])

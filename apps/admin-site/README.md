@@ -1,6 +1,9 @@
 # Luca Admin Site
 
-This static site is the Registration-first support mockup for GitHub Pages. It is intentionally separate from the staff application that will eventually consume authenticated ticket, assignment, and reply APIs.
+This directory contains two deliberately separate surfaces:
+
+- The root static files are the Registration-first GitHub Pages mockup used for public interface review.
+- The `app/` application is the authenticated Luca Messenger Operations dashboard used by staff.
 
 ## API connection
 
@@ -32,3 +35,18 @@ npx serve apps/admin-site --listen 4173
 ```
 
 For a local API on port `3000`, configure `http://localhost:3000` in the page and include `http://localhost:4173` in `CORS_ALLOWED_ORIGINS`.
+
+## Staff operations dashboard
+
+It shows recent conversations, messages and knowledge citations, delivery and webhook failures, active chatbot rules, published knowledge, and recent AI runs. Supabase remains the source of truth; the dashboard reads through the Luca API so database credentials never reach a worker's browser.
+
+## Local development
+
+Start the Luca API on port 3000, then run `npm run dev` in this directory. By default, the site reads `http://127.0.0.1:3000/admin/dashboard`.
+
+For a hosted environment, configure:
+
+- `DASHBOARD_API_URL`: the public HTTPS URL of the deployed Luca API.
+- `DASHBOARD_API_TOKEN`: the same long random value configured as `ADMIN_DASHBOARD_TOKEN` on the API.
+
+Keep the hosted site owner-only or workspace-restricted. Editing knowledge and rules is intentionally deferred until worker accounts and audit logging are ready.
