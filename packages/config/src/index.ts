@@ -46,7 +46,7 @@ export function loadRagConfig(environment: NodeJS.ProcessEnv): RagConfig {
   return {
     apiKey: requireSecret(environment, "OPENAI_API_KEY"),
     embeddingModel: environment.OPENAI_EMBEDDING_MODEL?.trim() || "text-embedding-3-small",
-    answerModel: environment.OPENAI_ANSWER_MODEL?.trim() || "gpt-5.6-terra"
+    answerModel: environment.OPENAI_ANSWER_MODEL?.trim() || "gpt-4o-mini"
   };
 }
 
@@ -58,7 +58,7 @@ export interface OpenAIConfig {
 export function loadOpenAIConfig(environment: NodeJS.ProcessEnv): OpenAIConfig {
   return {
     apiKey: requireSecret(environment, "OPENAI_API_KEY"),
-    model: environment.OPENAI_MODEL?.trim() || "gpt-5.6-terra"
+    model: environment.OPENAI_MODEL?.trim() || "gpt-4o-mini"
   };
 }
 

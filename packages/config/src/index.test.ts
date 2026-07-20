@@ -55,7 +55,7 @@ describe("loadRagConfig", () => {
     expect(loadRagConfig({ OPENAI_API_KEY: "test-key" })).toEqual({
       apiKey: "test-key",
       embeddingModel: "text-embedding-3-small",
-      answerModel: "gpt-5.6-terra"
+      answerModel: "gpt-4o-mini"
     });
   });
 });
